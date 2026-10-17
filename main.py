@@ -1,5 +1,22 @@
 import os
-import asyncio
+import http.server
+import socketserver
+import threading
+
+PORT = int(os.environ.get("PORT", 10000))
+
+class Handler(http.server.SimpleHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"Bot is alive and running!")
+
+def run_server():
+    with socketserver.TCPServer(("", PORT), Handler) as httpd:
+        print(f"Serving dummy web server on port {PORT}")
+        httpd.serve_forever()
+
+threading.Thread(target=run_server, daemon=True).start() 
 import yt_dlp
 from aiogram import Bot, Dispatcher, F
 from aiogram.filters import CommandStart
